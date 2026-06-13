@@ -87,7 +87,6 @@
     margin-bottom: 20px;
   }
 
-  /* LOGO DISCORD FINAL */
   .discord-box {
     text-align: center;
     margin-top: 25px;
@@ -106,7 +105,6 @@
     transform: scale(1.12);
   }
 
-  /* Flèches animées */
   .arrow {
     font-size: 32px;
     color: #5865F2;
@@ -142,8 +140,8 @@
   <div id="question-step" class="hidden" style="width:100%;">
     <h2 id="question">Chargement...</h2>
 
-    <button class="btn yes" onclick="answer('Oui')">Oui</button>
-    <button class="btn no" onclick="answer('Non')">Non</button>
+    <button id="btn-yes" class="btn yes" onclick="answer('Oui')">Oui</button>
+    <button id="btn-no" class="btn no" onclick="answer('Non')">Non</button>
 
     <div id="final" class="hidden">
       <button class="btn yes" onclick="sendForm()">Envoyer le formulaire</button>
@@ -158,10 +156,6 @@
         <img src="https://cdn.worldvectorlogo.com/logos/discord-6.svg"
              class="discord-logo">
       </a>
-
-      <div class="arrow">⬇️</div>
-
-      <p style="font-size:18px; font-weight:600; color:#5865F2;">Rejoindre</p>
     </div>
   </div>
 
@@ -209,8 +203,10 @@ function answer(rep) {
   index++;
 
   if (index >= questions.length) {
-    document.querySelector(".yes").classList.add("hidden");
-    document.querySelector(".no").classList.add("hidden");
+
+    // On cache les boutons pour éviter le texte "Oui"
+    document.getElementById("btn-yes").classList.add("hidden");
+    document.getElementById("btn-no").classList.add("hidden");
 
     const valid =
       answers[0].reponse === "Oui" &&
@@ -257,6 +253,5 @@ function sendForm() {
 
 </body>
 </html>
-
 
 
