@@ -7,8 +7,8 @@
 <style>
   body {
     margin: 0;
-    background: #f5f5f5;
-    font-family: Arial, sans-serif;
+    background: #eef1f5;
+    font-family: "Inter", Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,71 +16,169 @@
   }
 
   .card {
-    width: 380px;
+    width: 420px;
     background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   h2 {
-    margin-bottom: 20px;
-    font-size: 22px;
-    color: #333;
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #222;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
   }
 
   .btn {
     width: 100%;
-    padding: 12px;
-    margin-top: 10px;
+    padding: 14px;
+    margin-top: 12px;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 17px;
     cursor: pointer;
+    transition: 0.2s;
+    font-weight: 600;
   }
 
   .yes { background: #4CAF50; color: white; }
+  .yes:hover { background: #43a047; }
+
   .no { background: #e53935; color: white; }
+  .no:hover { background: #d32f2f; }
 
   .hidden { display: none; }
 
   .refused {
     color: #e53935;
-    font-size: 20px;
+    font-size: 22px;
     text-align: center;
     font-weight: bold;
+    margin-top: 20px;
   }
 
   .success {
     color: #4CAF50;
-    font-size: 20px;
+    font-size: 22px;
     text-align: center;
     font-weight: bold;
+    margin-bottom: 20px;
   }
 
-  a {
-    color: #1976d2;
-    text-decoration: none;
+  /* LOGO DISCORD FINAL */
+  .discord-box {
+    text-align: center;
+    margin-top: 20px;
   }
+
+  .discord-logo {
+    width: 110px;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+
+  .discord-logo:hover {
+    transform: scale(1.1);
+  }
+
+  /* Flèches animées */
+  .arrow {
+    font-size: 32px;
+    color: #5865F2;
+    animation: bounce 1s infinite;
+  }
+
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+  }
+
 </style>
 </head>
 <body>
 
 <div class="card">
-  <h2 id="question">Chargement...</h2>
 
-  <button class="btn yes" onclick="answer('Oui')">Oui</button>
-  <button class="btn no" onclick="answer('Non')">Non</button>
+  <!-- ÉTAPE 0 : INFOS PERSONNELLES -->
+  <div id="info-step">
+    <h2>Vos informations</h2>
 
-  <div id="final" class="hidden">
-    <button class="btn yes" onclick="sendForm()">Envoyer le formulaire</button>
+    <input id="nom" placeholder="Nom">
+    <input id="prenom" placeholder="Prénom">
+    <input id="email" placeholder="Email">
+    <input id="discord" placeholder="Discord (ex: ZerNox#0001)">
+    <input id="numero" placeholder="Numéro de téléphone">
+
+    <button class="btn yes" onclick="startForm()">Commencer</button>
   </div>
 
-  <p id="result"></p>
+  <!-- ÉTAPE 1 : QUESTIONS -->
+  <div id="question-step" class="hidden">
+    <h2 id="question">Chargement...</h2>
+
+    <button class="btn yes" onclick="answer('Oui')">Oui</button>
+    <button class="btn no" onclick="answer('Non')">Non</button>
+
+    <div id="final" class="hidden">
+      <button class="btn yes" onclick="sendForm()">Envoyer le formulaire</button>
+    </div>
+
+    <p id="result"></p>
+
+    <div id="discord-section" class="hidden discord-box">
+      <div class="arrow">⬇️</div>
+      <a href="https://discord.gg/CptJeaPNNd" target="_blank">
+        <img src="https://cdn.discordapp.com/icons/974466859127234600/a_8f6c2b3c0f.png?size=256"
+             class="discord-logo">
+      </a>
+      <div class="arrow">⬇️</div>
+      <p style="font-size:18px; font-weight:600; color:#5865F2;">Rejoindre</p>
+    </div>
+  </div>
+
 </div>
 
 <script>
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1515140308759744513/U-OawdXwrJ98uCh7K0zSsKoEeRXXV8sfLNduWtPEYQRTjfnaGv8aDaZnIEE5rp8Tr11F";
+
+let userInfo = {};
+
+function startForm() {
+  const nom = document.getElementById("nom").value.trim();
+  const prenom = document.getElementById("prenom").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const discord = document.getElementById("discord").value.trim();
+  const numero = document.getElementById("numero").value.trim();
+
+  if (!nom || !prenom || !email || !discord || !numero) {
+    alert("Merci de remplir toutes les informations.");
+    return;
+  }
+
+  userInfo = { nom, prenom, email, discord, numero };
+
+  document.getElementById("info-step").classList.add("hidden");
+  document.getElementById("question-step").classList.remove("hidden");
+  document.getElementById("question").innerText = questions[0].text;
+}
 
 const questions = [
   { text: "Êtes-vous motivé à travailler ?", requiredYes: true },
@@ -93,8 +191,6 @@ const questions = [
 let index = 0;
 let answers = [];
 
-document.getElementById("question").innerText = questions[0].text;
-
 function answer(rep) {
   const q = questions[index];
   answers.push({ question: q.text, reponse: rep });
@@ -102,11 +198,9 @@ function answer(rep) {
   index++;
 
   if (index >= questions.length) {
-    // FIN DU FORMULAIRE
     document.querySelector(".yes").classList.add("hidden");
     document.querySelector(".no").classList.add("hidden");
 
-    // Vérification finale
     const valid =
       answers[0].reponse === "Oui" &&
       answers[1].reponse === "Oui";
@@ -117,13 +211,11 @@ function answer(rep) {
       return;
     }
 
-    // Formulaire validé
     document.getElementById("question").innerText = "Formulaire terminé";
     document.getElementById("final").classList.remove("hidden");
     return;
   }
 
-  // Question suivante
   document.getElementById("question").innerText = questions[index].text;
 }
 
@@ -132,16 +224,26 @@ function sendForm() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      content: "**Nouveau formulaire validé :**\n" +
-        answers.map(a => `• **${a.question}** : ${a.reponse}`).join("\n")
+      content:
+        "**Nouveau formulaire validé :**\n\n" +
+        "**Informations personnelles :**\n" +
+        `• Nom : ${userInfo.nom}\n` +
+        `• Prénom : ${userInfo.prenom}\n` +
+        `• Email : ${userInfo.email}\n` +
+        `• Discord : ${userInfo.discord}\n` +
+        `• Numéro : ${userInfo.numero}\n\n` +
+        "**Réponses :**\n" +
+        answers.map(a => `• ${a.question} : ${a.reponse}`).join("\n")
     })
   });
 
   document.getElementById("result").innerHTML =
-    "<div class='success'>Formulaire envoyé !</div><br>" +
-    "<a href='https://discord.gg/CptJeaPNNd' target='_blank'>Rejoindre le Discord</a>";
+    "<div class='success'>Formulaire envoyé !</div>";
+
+  document.getElementById("discord-section").classList.remove("hidden");
 }
 </script>
 
 </body>
 </html>
+
