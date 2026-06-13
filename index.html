@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Formulaire de Recrutement</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #f5f5f5;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .card {
+    width: 380px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: #333;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .yes { background: #4CAF50; color: white; }
+  .no { background: #e53935; color: white; }
+
+  .hidden { display: none; }
+
+  .refused {
+    color: #e53935;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .success {
+    color: #4CAF50;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  a {
+    color: #1976d2;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2 id="question">Chargement...</h2>
+
+  <button class="btn yes" onclick="answer('Oui')">Oui</button>
+  <button class="btn no" onclick="answer('Non')">Non</button>
+
+  <div id="final" class="hidden">
+    <button class="btn yes" onclick="sendForm()">Envoyer le formulaire</button>
+  </div>
+
+  <p id="result"></p>
+</div>
+
+<script>
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1515140308759744513/U-OawdXwrJ98uCh7K0zSsKoEeRXXV8sfLNduWtPEYQRTjfnaGv8aDaZnIEE5rp8Tr11F";
+
+const questions = [
+  { text: "Êtes-vous motivé à travailler ?", requiredYes: true },
+  { text: "Serez-vous toujours motivé si vous ne trouvez pas la bonne stratégie ?", requiredYes: true },
+  { text: "Acceptez-vous les horaires 12h-22h30 ou 18h-2h ?", requiredYes: false },
+  { text: "Avez-vous de l'expérience en marketing ?", requiredYes: false },
+  { text: "Avez-vous de l'expérience en chatting ?", requiredYes: false }
+];
+
+let index = 0;
+let answers = [];
+
+document.getElementById("question").innerText = questions[0].text;
+
+function answer(rep) {
+  const q = questions[index];
+  answers.push({ question: q.text, reponse: rep });
+
+  index++;
+
+  if (index >= questions.length) {
+    // FIN DU FORMULAIRE
+    document.querySelector(".yes").classList.add("hidden");
+    document.querySelector(".no").classList.add("hidden");
+
+    // Vérification finale
+    const valid =
+      answers[0].reponse === "Oui" &&
+      answers[1].reponse === "Oui";
+
+    if (!valid) {
+      document.getElementById("question").innerText = "Résultat";
+      document.getElementById("result").innerHTML = "<div class='refused'>REFUSÉ</div>";
+      return;
+    }
+
+    // Formulaire validé
+    document.getElementById("question").innerText = "Formulaire terminé";
+    document.getElementById("final").classList.remove("hidden");
+    return;
+  }
+
+  // Question suivante
+  document.getElementById("question").innerText = questions[index].text;
+}
+
+function sendForm() {
+  fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      content: "**Nouveau formulaire validé :**\n" +
+        answers.map(a => `• **${a.question}** : ${a.reponse}`).join("\n")
+    })
+  });
+
+  document.getElementById("result").innerHTML =
+    "<div class='success'>Formulaire envoyé !</div><br>" +
+    "<a href='https://discord.gg/CptJeaPNNd' target='_blank'>Rejoindre le Discord</a>";
+}
+</script>
+
+</body>
+</html>
